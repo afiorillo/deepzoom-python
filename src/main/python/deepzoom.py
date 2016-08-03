@@ -10,16 +10,16 @@ class LevelInfo(object):
         self.xRes = xRes
         self.yRes = yRes
         self.downsample = downsample
-        @property
-        def w(self): return self.width
-        @property
-        def h(self): return self.height
-        @property
-        def sz(self): return (self.w,self.h)
-        @property
-        def ds(self): return self.downsample
+    @property
+    def w(self): return self.width
+    @property
+    def h(self): return self.height
+    @property
+    def sz(self): return (self.w,self.h)
+    @property
+    def ds(self): return self.downsample
 
-    def div(factor=2):
+    def div(self,factor=2):
         """Returns a copy of LevelInfo downsampled by factor."""
         return LevelInfo(int(self.w/factor),int(self.h/factor),
                          float(self.xRes*factor),float(self.yRes*factor),
@@ -47,7 +47,7 @@ class DeepzoomImage(object):
         self._imgPtr = Image.open(filename)
         self._imgArr = [array(self._imgPtr)] # cached copies of image levels
 
-        self._levels = [LevelInfo(self._imgArr.shape[0],self._imgArr.shape[1],1,1,1)]
+        self._levels = [LevelInfo(self._imgArr[0].shape[0],self._imgArr[0].shape[1],1,1,1)]
 
     @property
     def levels(self):
@@ -61,7 +61,7 @@ class DeepzoomImage(object):
         return self._levels[level].downsample
 
     def read_region(self,level,x0,y0,x1,y1):
-        return self._imgArr[level][x0:x1,y0:y1,:]
+        return Image.fromarray(self._imgArr[level][x0:x1,y0:y1,:])
 
 
 class Deepzoom(object):
@@ -76,7 +76,7 @@ class Deepzoom(object):
 
     def __init__(self,image,**kwargs):
         self.image = image
-        self.constraints = self.defaults.update(kwargs)
+        self.constraints = dict(kwargs.items() + self.defaults.items())
 
         # Array of image levels from level 0 (ds==1) to N
         self._imageLayout = [
@@ -87,14 +87,14 @@ class Deepzoom(object):
         self._dzLayout = [self._imageLayout[0]]
         while self._dzLayout[-1].w>1 and self._dzLayout[-1].h>1:
             self._dzLayout.append(self._dzLayout[-1].div(2))
-        self._dzLayout.reversed() # level 0 is w,h==(1,1)
+        self._dzLayout.reverse() # level 0 is w,h==(1,1)
 
         # Array of number of tiles from dz level 0 (ds==1<<M) to M (ds==1)
         self._tileLayout = [
-            LevelInfo( width = ceil(dz.width / self.tileSize[0]),
-                       height= ceil(dz.height / self.tileSize[1],
-                       xRes  = dz.xRes, yRes = dz.yRes, downsample = dz.ds))
-            for lvl in self._dzLayout]
+            LevelInfo( width = ceil(layout.width/self.tileSize[0]),
+                       height= ceil(layout.height/self.tileSize[1]),
+                       xRes  = layout.xRes, yRes = layout.yRes, downsample = layout.ds)
+            for layout in self._dzLayout]
 
     def _get_tileInfo(self,tileLevel,tileCol,tileRow):
         # check params
@@ -107,27 +107,27 @@ class Deepzoom(object):
         imgToDzDs = self._tileLayout[tileLevel].ds / imgDs
 
         # "dz..." is "deepzoom" coordinates, the image in the level of the deepzoom pyramid
-        dzSize = self._tileLayout[tileLevel].sz
+        dzSize = self._dzLayout[tileLevel].sz
         dzTL = (
-            self.tile_size[0]*tileCol,
-            self.tile_size[1]*tileRow,
+            self.tileSize[0]*tileCol,
+            self.tileSize[1]*tileRow,
         )
         imgTL = (
             dzTL[0] * imgToDzDs,
             dzTL[1] * imgToDzDs,
         )
 
-        imgTL = (
-            min(self.tile_size[0],(self.tile_size[0]*tileCol - lvlSize[0])),
-            min(self.tile_size[1],(self.tile_size[1]*tileRow - lvlSize[1])),
+        imgSz = (
+            min(self.tileSize[0],(dzSize[0] - self.tileSize[0]*tileCol)),
+            min(self.tileSize[1],(dzSize[1] - self.tileSize[1]*tileRow)),
         )
 
-        return TileInfo(imgTL[0],imgTL[1],pSize[0],pSize[1],imgLvl)
+        return TileInfo(imgTL[0],imgTL[1],imgSz[0],imgSz[1],imgLvl)
 
-    def get_tile(tileLevel,tileCol,tileRow):
+    def get_tile(self,tileLevel,tileCol,tileRow):
         tInfo = self._get_tileInfo(tileLevel,tileCol,tileRow)
         return self.image.read_region(
-            level=tInfo.imgLvl,x0=tInfo.x0,y0=tInfo.y0,width=tInfo.w,height=tInfo.h
+            level=tInfo.imgLvl,x0=tInfo.x0,y0=tInfo.y0,x1=tInfo.x1,y1=tInfo.y1
         )
 
     @property

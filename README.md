@@ -5,7 +5,7 @@ A DeepZoom suite for Python. Contains facilities to access a generic image as a 
 ## Installation
 
 1. Clone
-2. `python setup.py install'
+2. `pip install git+git://github.com/andrewmfiorillo/deepzoom-python@<branch>`
 
 
 ## Contributing
