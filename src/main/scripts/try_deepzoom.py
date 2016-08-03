@@ -1,4 +1,4 @@
-from deepzoom import Deepzoom,DeepzoomImage
+from factory_functions import Deepzoom
 
 from pathlib2 import Path
 
@@ -7,10 +7,12 @@ if __name__=='__main__':
     imageName = 'img_001_1268_1024.jpg'
     img = Path(__file__).parent.parent.parent.joinpath('unittest/python/%s'%imageName)
     img.resolve()
+    #
+    # dzImg = FlatDeepzoomImage(str(img))
 
-    dzImg = DeepzoomImage(str(img))
+    # dzGen = DeepzoomInterface(dzImg)
 
-    dzGen = Deepzoom(dzImg)
+    dzGen = Deepzoom(img)
 
     print 'Image Size: (%d,%d)'%(dzGen.imageLayout[0].w,dzGen.imageLayout[0].h)
     print 'N DeepZoom Levels: %s'%(len(dzGen.tileLayout))

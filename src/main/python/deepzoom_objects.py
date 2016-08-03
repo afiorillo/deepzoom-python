@@ -1,7 +1,6 @@
 from __future__ import division
 from math import ceil
-from PIL import Image
-from numpy import array
+
 
 class LevelInfo(object):
     def __init__(self,width,height,xRes,yRes,downsample):
@@ -41,30 +40,8 @@ class TileInfo(object):
     @property
     def y1(self): return self.y0+self.height
 
-class DeepzoomImage(object):
 
-    def __init__(self,filename):
-        self._imgPtr = Image.open(filename)
-        self._imgArr = [array(self._imgPtr)] # cached copies of image levels
-
-        self._levels = [LevelInfo(self._imgArr[0].shape[0],self._imgArr[0].shape[1],1,1,1)]
-
-    @property
-    def levels(self):
-        # default is a plain, flat, image
-        return self._levels
-
-    def best_level_from_downsample(self,downsample):
-        return 0
-
-    def downsample(self,level):
-        return self._levels[level].downsample
-
-    def read_region(self,level,x0,y0,x1,y1):
-        return Image.fromarray(self._imgArr[level][x0:x1,y0:y1,:])
-
-
-class Deepzoom(object):
+class DeepzoomInterface(object):
 
     # deepsoom constraints
     defaults = {
@@ -75,6 +52,7 @@ class Deepzoom(object):
     }
 
     def __init__(self,image,**kwargs):
+        # super(DeepzoomInterface,self).__init__(**kwargs) ## TODO: Should be a mix-in?
         self.image = image
         self.constraints = dict(kwargs.items() + self.defaults.items())
 
