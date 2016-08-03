@@ -1,5 +1,7 @@
 from __future__ import division
 from math import ceil
+from PIL import Image
+from shutil import copy
 
 
 class LevelInfo(object):
@@ -111,7 +113,7 @@ class DeepzoomInterface(object):
     @property
     def tileSize(self): return self.constraints['tileSize']
     @property
-    def tileFormat(self): return self.constraints['jpeg']
+    def tileFormat(self): return self.constraints['tileFormat']
     @property
     def tileQuality(self): return self.constraints['tileQuality']
 
@@ -119,3 +121,38 @@ class DeepzoomInterface(object):
     def imageLayout(self): return self._imageLayout
     @property
     def tileLayout(self): return self._tileLayout
+
+class StaticCachingDeepzoomInterface(DeepzoomInterface):
+
+    def __init__(self,image,**kwargs):
+        super(StaticCachingDeepzoomInterface,self).__init__(image,**kwargs)
+        if image.filepath.stem.lower()!=image.filepath.parent.name.lower():
+            newParent = image.filepath.parent.joinpath(image.filepath.stem)
+            newParent.mkdir(parents=True,exist_ok=True)
+            newFilepath = newParent.joinpath(image.filepath.name)
+            copy(str(image.filepath),str(newFilepath))
+            self._filepath = newFilepath
+            self._parentDir = newParent
+        else:
+            self._filepath = image.filepath
+            self._parentDir = image.filepath.parent
+
+    @property
+    def filepath(self): return self._filepath
+
+    @property
+    def parentDir(self): return self._parentDir
+
+    def get_tile(self,tileLevel,tileCol,tileRow):
+        target = self.parentDir.joinpath('%02d/%d_%d.%s'%(
+            tileLevel,tileCol,tileRow,self.tileFormat))
+        try:
+            target.resolve()
+            tile = Image.open(str(target))
+        except OSError:
+            tile = super(StaticCachingDeepzoomInterface,self).get_tile(
+                tileLevel,tileCol,tileRow
+            )
+            target.parent.mkdir(parents=True,exist_ok=True)
+            tile.save(str(target))
+        return tile

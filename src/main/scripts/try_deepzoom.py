@@ -12,17 +12,17 @@ if __name__=='__main__':
 
     # dzGen = DeepzoomInterface(dzImg)
 
-    dzGen = Deepzoom(img)
+    dzGen = Deepzoom(img,create_static_cache=True)
 
     print 'Image Size: (%d,%d)'%(dzGen.imageLayout[0].w,dzGen.imageLayout[0].h)
     print 'N DeepZoom Levels: %s'%(len(dzGen.tileLayout))
     for lvl,layout in enumerate(dzGen.tileLayout):
         print 'DeepZoom Level %d: (%d,%d) tiles'%(lvl,layout.w,layout.h)
 
-    print 'Showing Base Level Image Tiles:'
+    print 'Saving out all tiles...'
 
-    lvl = len(dzGen.tileLayout)-1
-    for col in range(int(dzGen.tileLayout[lvl].w)):
-       for row in range(int(dzGen.tileLayout[lvl].h)):
-           t = dzGen.get_tile(lvl,col,row)
-           t.show()
+    for lvl in range(len(dzGen.tileLayout)):
+        for col in range(int(dzGen.tileLayout[lvl].w)):
+           for row in range(int(dzGen.tileLayout[lvl].h)):
+               t = dzGen.get_tile(lvl,col,row)
+    print 'Saved!'

@@ -2,6 +2,7 @@ from pathlib2 import Path
 
 from image_interface import FlatDeepzoomImage as _FlatDeepzoomImage
 from deepzoom_objects import DeepzoomInterface as _DeepzoomInterface
+from deepzoom_objects import StaticCachingDeepzoomInterface as _CachedInterface
 
 def Deepzoom(image_or_directory_path,create_static_cache=False,**kwargs):
     """
@@ -37,7 +38,7 @@ def Deepzoom(image_or_directory_path,create_static_cache=False,**kwargs):
 
     if create_static_cache:
         # do something to DeepZoomGenerator so that it saves on get_tile()
-        dzGen = None
+        dzGen = _CachedInterface(img,**kwargs)
     else:
         dzGen = _DeepzoomInterface(img,**kwargs)
     return dzGen
