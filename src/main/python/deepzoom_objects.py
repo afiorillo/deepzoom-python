@@ -1,7 +1,9 @@
 from __future__ import division
 from math import ceil
+from numpy import Inf
 from PIL import Image
 from shutil import copy
+from pathlib2 import Path
 
 
 class LevelInfo(object):
@@ -154,5 +156,46 @@ class StaticCachingDeepzoomInterface(DeepzoomInterface):
                 tileLevel,tileCol,tileRow
             )
             target.parent.mkdir(parents=True,exist_ok=True)
-            tile.save(str(target))
+            if self.tileFormat.lower() in ['jpeg','jpg']:
+                tile.save(str(target),quality=self.tileQuality)
+            else:
+                tile.save(str(target))
         return tile
+
+    ## Methods for handling the files in the cache
+
+    def _get_cache_arr(self):
+        fList = self.parentDir.rglob('*.%s'%self.tileFormat)
+        cacheArr = {}
+        for f in fList:
+            if f == self.filepath: continue
+            stat = f.stat()
+            lvl = f.parent.name
+            loc = f.stem.split('_')
+            address = '%d_%d_%d'%(int(lvl),int(loc[0]),int(loc[1]))
+            cacheArr[address] = {'sz':stat.st_size,
+                                 'ts':stat.st_mtime,
+                                 'path': f}
+        return cacheArr
+
+    @property
+    def cache_size(self):
+        """ Returns the current cache size in bytes, NOT including the source image. """
+        sz = 0
+        for k,v in self._get_cache_arr().iteritems(): sz += v.get('sz',0)
+        return sz
+
+    def del_oldest_tile(self):
+        """ Deletes the oldest tile from the cache. """
+        arr = self._get_cache_arr()
+        oldestAddr = None
+        oldestTs = Inf
+        for k,v in arr.iteritems():
+            if v.get('ts',Inf) < oldestTs:
+                oldestTs = v.get('tx',Inf)
+                oldestAddr = k
+
+        if oldestAddr is not None:
+            p = Path(arr[oldestAddr].get('path',None))
+            if p is None: raise IOError('Invalid Path!')
+            p.unlink()

@@ -12,7 +12,7 @@ if __name__=='__main__':
 
     # dzGen = DeepzoomInterface(dzImg)
 
-    dzGen = Deepzoom(img,create_static_cache=True)
+    dzGen = Deepzoom(img,create_static_cache=True,tileQuality=100)
 
     print 'Image Size: (%d,%d)'%(dzGen.imageLayout[0].w,dzGen.imageLayout[0].h)
     print 'N DeepZoom Levels: %s'%(len(dzGen.tileLayout))
@@ -26,3 +26,9 @@ if __name__=='__main__':
            for row in range(int(dzGen.tileLayout[lvl].h)):
                t = dzGen.get_tile(lvl,col,row)
     print 'Saved!'
+    print 'Cache occupies %d kb'%(dzGen.cache_size/1024.0)
+
+    print 'Popping some tiles.'
+    for i in range(5):
+        dzGen.del_oldest_tile()
+    print 'Cache occupies %d kb'%(dzGen.cache_size/1024.0)
