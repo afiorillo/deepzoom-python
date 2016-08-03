@@ -1,4 +1,4 @@
-# Project Name
+# Deepzoom (Python)
 
 A DeepZoom suite for Python. Contains facilities to access a generic image as a DeepZoom image, create static DeepZoom image directories, serve DeepZoom images via a RESTful API, and view a DeepZoom image via OpenSeadragon.
 
