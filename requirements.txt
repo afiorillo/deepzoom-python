@@ -1,5 +1,9 @@
 ## Stdlib
 # math
+# shutil
+# json
+# string
 ##
 Pillow
 numpy
+pathlib2

@@ -1,5 +1,5 @@
 from shutil import rmtree
-
+from unittest import TestCase
 from pathlib2 import Path
 
 from deepzoom import FlatDeepzoomImage
@@ -8,7 +8,7 @@ from deepzoom.deepzoom_objects import LevelInfo
 
 FDIR = Path(__file__).parent
 
-class TestDeepzoom(object):
+class TestDeepzoom(TestCase):
     INTERFACE = DeepzoomInterface
     IMAGE_PATH = FDIR.joinpath('img_001_1268_1024.jpg')
 

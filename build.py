@@ -11,6 +11,9 @@ use_plugin("python.distutils")
 name = "deepzoom-python"
 default_task = "publish"
 
+@init
+def initialize(project):
+    project.set_property('coverage_break_build',False)
 
 @init
 def set_properties(project):
