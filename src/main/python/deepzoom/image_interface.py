@@ -4,7 +4,7 @@ from pathlib2 import Path
 
 from deepzoom_objects import LevelInfo
 
-class _DeepzoomImageBase(object):
+class DeepzoomImageBase(object):
     """ The basic Deepzoom Image.
     Needs to have a notion of levels, and a way to read_region."""
 
@@ -26,7 +26,7 @@ class _DeepzoomImageBase(object):
     def size(self,level): return self._levels[level].sz
 
 
-class FlatDeepzoomImage(_DeepzoomImageBase):
+class FlatDeepzoomImage(DeepzoomImageBase):
     """ A Deepzoom Image for the "flat" images, i.e. jpegs, pngs, etc. """
 
     def __init__(self,filepath):

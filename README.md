@@ -17,7 +17,8 @@ A DeepZoom suite for Python. Contains facilities to access a generic image as a 
 5. Submit a pull request :D
 
 ### TO DOs:
-- Static DeepZoom Image
+- ~~Static DeepZoom Image~~
+- Clean up public api
 - RESTful API
 - Flask-script, Flask-RESTful, etc.
 - OpenSeadragon page

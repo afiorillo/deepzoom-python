@@ -1,9 +1,11 @@
 from __future__ import division
 from math import ceil
-from numpy import Inf
+from numpy import Inf,mean
 from PIL import Image
 from shutil import copy
 from pathlib2 import Path
+from json import dumps
+from string import Template
 
 
 class LevelInfo(object):
@@ -47,18 +49,28 @@ class TileInfo(object):
 
 class DeepzoomInterface(object):
 
+    tileOverlap = 0 # TODO: bother with overlap?
     # deepsoom constraints
     defaults = {
-        'tileSize': (512,512),
+        'tileSize': 512,
         'tileFormat': 'jpeg', # 'jpeg' or 'png'
         'tileQuality': 80,
         # 'overlap': [0,0],
     }
 
+
     def __init__(self,image,**kwargs):
         # super(DeepzoomInterface,self).__init__(**kwargs) ## TODO: Should be a mix-in?
+
         self.image = image
+        self._dzi = None
         self.constraints = dict(kwargs.items() + self.defaults.items())
+        if isinstance(self.constraints.get('tileSize'),int):
+            self.constraints['tileSize'] = tuple([self.constraints['tileSize']
+                                                  for i in range(2)])
+
+        if (self.tileSize[0] != self.tileSize[1]):
+            raise Exception('TileSize must be square.')
 
         # Array of image levels from level 0 (ds==1) to N
         self._imageLayout = [
@@ -123,6 +135,36 @@ class DeepzoomInterface(object):
     def imageLayout(self): return self._imageLayout
     @property
     def tileLayout(self): return self._tileLayout
+
+    @property
+    def dzi(self):
+        if self._dzi is None:
+            self._dzi = {"Image": {
+                "xmlns":    "http://schemas.microsoft.com/deepzoom/2008",
+                "Format":   self.tileFormat, "Overlap":  self.tileOverlap,
+                "TileSize": self.tileSize[0], "Size": {
+                    "Height":self._dzLayout[-1].w,"Width":self._dzLayout[-1].h
+                    }
+                }
+                  }
+        return self._dzi
+
+    @property
+    def json(self): return dumps(self.dzi,indent=4)
+
+    @property
+    def xml(self):
+        t = Template('''\
+<?xml version="1.0" encoding="UTF-8"?>
+<Image xmlns="http://schemas.microsoft.com/deepzoom/2008
+    Format="$tileFormat" Overlap="$tileOverlap" TileSize="$tileSize >
+        <Size Height="$height" Width="$width" />
+</Image>''')
+        return t.substitute(
+            tileFormat=self.tileFormat,tileOverlap=self.tileOverlap,
+            tileSize=self.tileSize[0],height=self._dzLayout[-1].h,
+            width=self._dzLayout[-1].w)
+
 
 class StaticCachingDeepzoomInterface(DeepzoomInterface):
 
@@ -199,3 +241,5 @@ class StaticCachingDeepzoomInterface(DeepzoomInterface):
             p = Path(arr[oldestAddr].get('path',None))
             if p is None: raise IOError('Invalid Path!')
             p.unlink()
+        else:
+            raise IOError('No tiles to delete!')

@@ -1,6 +1,6 @@
-from factory_functions import Deepzoom
-
 from pathlib2 import Path
+
+from deepzoom.factory_functions import Deepzoom
 
 
 if __name__=='__main__':
@@ -29,6 +29,13 @@ if __name__=='__main__':
     print 'Cache occupies %d kb'%(dzGen.cache_size/1024.0)
 
     print 'Popping some tiles.'
-    for i in range(5):
-        dzGen.del_oldest_tile()
+    while True:
+        try: dzGen.del_oldest_tile()
+        except IOError: break
     print 'Cache occupies %d kb'%(dzGen.cache_size/1024.0)
+
+    print 'JSON:'
+    print dzGen.json
+
+    print 'XML:'
+    print dzGen.xml
