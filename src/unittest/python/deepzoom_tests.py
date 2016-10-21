@@ -5,6 +5,7 @@ from pathlib2 import Path
 from deepzoom import FlatDeepzoomImage
 from deepzoom import DeepzoomInterface,StaticCachingDeepzoomInterface
 from deepzoom.deepzoom_objects import LevelInfo
+from deepzoom.factory_functions import Deepzoom,_ImageFactory
 
 FDIR = Path(__file__).parent
 
@@ -61,3 +62,14 @@ class TestCachedDeepzoom(TestDeepzoom):
     def test_second_construction(self):
         newImg = FlatDeepzoomImage(self.dzGen.filepath)
         newGen = self.INTERFACE(newImg)
+
+    def test_factory_construction(self):
+        newGen = Deepzoom(FDIR.joinpath(self.IMAGE_PATH.stem),
+                          create_static_cache=True)
+
+class TestDeepzoomFactory(TestDeepzoom):
+    IMAGE_PATH = FDIR.joinpath('img_001_1268_1024.jpg')
+
+    def setUp(self):
+        self.dzImg = _ImageFactory(self.IMAGE_PATH)
+        self.dzGen = Deepzoom(self.IMAGE_PATH)

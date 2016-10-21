@@ -5,8 +5,15 @@ A DeepZoom suite for Python. Contains facilities to access a generic image as a 
 ## Installation
 
 1. Clone
-2. `pip install git+git://github.com/andrewmfiorillo/deepzoom-python@<branch>`
+2. `pip install git+git://github.com/andrewmfiorillo/deepzoom-python`
 
+### TO DOs:
+ [ ] Image format plugins (Base class, registration, etc.)
+ [ ] Config by file
+ [ ] Command-line interface (caching level, config, etc.)
+ [ ] RESTful API with Falcon/CherryPy (probably not Flask)
+ [ ] Load balancer (each worker has 1 image, many workers)
+ [ ] OpenSeadragon or Leaflet page
 
 ## Contributing
 
@@ -15,13 +22,6 @@ A DeepZoom suite for Python. Contains facilities to access a generic image as a 
 3. Commit your changes: `git commit -am 'Add some feature'`
 4. Push to the branch: `git push origin my-new-feature`
 5. Submit a pull request :D
-
-### TO DOs:
-- ~~Static DeepZoom Image~~
-- Clean up public api
-- RESTful API
-- Flask-script, Flask-RESTful, etc.
-- OpenSeadragon page
 
 ## License
 

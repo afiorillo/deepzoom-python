@@ -18,23 +18,22 @@ def Deepzoom(image_or_directory_path,create_static_cache=False,**kwargs):
     :return: DeepZoom
     """
     p = Path(image_or_directory_path).resolve()
+    img = None
     if p.is_file():
         img = _ImageFactory(p)
     elif p.is_dir():
-        fList = p.glob('%s.*'%p.name)
+        fList = list(p.glob('%s.*'%p.name))
         if len(fList)==0:
             raise IOError('Invalid Deepzoom directory (%s). '
                           'Must contain and image named (%s) to be valid.'
                           ''%(p,'%s.<EXT>'%p.name))
-        img = None
         for f in fList:
             try: img = _ImageFactory(f)
             except IOError: pass
-        if img is None:
-            raise IOError('Invalid Deepzoom directory (%s). '
-                          'Must contain an openable image named (%s) to be valid.'
-                          ' Coult not open any contained images.'
-                          ''%(p,'%s.<EXT>'%p.name))
+
+    if img is None:
+        raise IOError('Invalid Deepzoom target (%s). '
+                      'Not a supported image format.'%(p))
 
     if create_static_cache:
         # do something to DeepZoomGenerator so that it saves on get_tile()
