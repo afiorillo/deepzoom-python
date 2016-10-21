@@ -2,10 +2,11 @@ from shutil import rmtree
 from unittest import TestCase
 from pathlib2 import Path
 
-from deepzoom import FlatDeepzoomImage
+from image_io import FlatDeepzoomImage
 from deepzoom import DeepzoomInterface,StaticCachingDeepzoomInterface
-from deepzoom.deepzoom_objects import LevelInfo
-from deepzoom.factory_functions import Deepzoom,_ImageFactory
+from image_io.base import LevelInfo
+from deepzoom.factory_functions import Deepzoom
+from image_io.factory import _ImageFactory
 
 FDIR = Path(__file__).parent
 

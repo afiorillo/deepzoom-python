@@ -1,34 +1,16 @@
 from __future__ import division
-from math import ceil
-from numpy import Inf,mean
-from PIL import Image
-from shutil import copy
-from pathlib2 import Path
+
 from json import dumps
+from math import ceil
+from shutil import copy
 from string import Template
 
+from PIL import Image
+from numpy import Inf
+from pathlib2 import Path
 
-class LevelInfo(object):
-    def __init__(self,width,height,xRes,yRes,downsample):
-        self.width = width
-        self.height = height
-        self.xRes = xRes
-        self.yRes = yRes
-        self.downsample = downsample
-    @property
-    def w(self): return self.width
-    @property
-    def h(self): return self.height
-    @property
-    def sz(self): return (self.w,self.h)
-    @property
-    def ds(self): return self.downsample
+from image_io.base import LevelInfo
 
-    def div(self,factor=2):
-        """Returns a copy of LevelInfo downsampled by factor."""
-        return LevelInfo(int(self.w/factor),int(self.h/factor),
-                         float(self.xRes*factor),float(self.yRes*factor),
-                         int(self.ds*factor))
 
 class TileInfo(object):
     def __init__(self,x0,y0,width,height,imgLvl):
@@ -74,7 +56,7 @@ class DeepzoomInterface(object):
 
         # Array of image levels from level 0 (ds==1) to N
         self._imageLayout = [
-            LevelInfo(lvl.width,lvl.height,lvl.xRes,lvl.yRes,lvl.ds)
+            LevelInfo(lvl.width, lvl.height, lvl.xRes, lvl.yRes, lvl.ds)
             for lvl in image.levels]
 
         # Array of deepzoom levels from level 0 (ds== 1<<M) to M (ds==1)
@@ -85,9 +67,9 @@ class DeepzoomInterface(object):
 
         # Array of number of tiles from dz level 0 (ds==1<<M) to M (ds==1)
         self._tileLayout = [
-            LevelInfo( width = ceil(layout.width/self.tileSize[0]),
-                       height= ceil(layout.height/self.tileSize[1]),
-                       xRes  = layout.xRes, yRes = layout.yRes, downsample = layout.ds)
+            LevelInfo(width = ceil(layout.width / self.tileSize[0]),
+                      height= ceil(layout.height/self.tileSize[1]),
+                      xRes  = layout.xRes, yRes = layout.yRes, downsample = layout.ds)
             for layout in self._dzLayout]
 
     def _get_tileInfo(self,tileLevel,tileCol,tileRow):

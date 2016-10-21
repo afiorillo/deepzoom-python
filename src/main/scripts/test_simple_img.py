@@ -1,18 +1,22 @@
+"""
+test_simple_img.py
+
+Given an image, ensures it can open it and read metadata. Caches all tiles
+and then wipes the cache. Also writes out the metadata files.
+"""
+from shutil import rmtree
+
 from pathlib2 import Path
 
 from deepzoom.factory_functions import Deepzoom
 
+IMG = Path(__file__).parent.parent.parent.joinpath('unittest/python/'
+                                                   'img_001_1268_1024.jpg')
 
 if __name__=='__main__':
-    imageName = 'img_001_1268_1024.jpg'
-    img = Path(__file__).parent.parent.parent.joinpath('unittest/python/%s'%imageName)
-    img.resolve()
-    #
-    # dzImg = FlatDeepzoomImage(str(img))
+    IMG.resolve()
 
-    # dzGen = DeepzoomInterface(dzImg)
-
-    dzGen = Deepzoom(img,create_static_cache=True,tileQuality=100)
+    dzGen = Deepzoom(IMG, create_static_cache=True, tileQuality=100)
 
     print 'Image Size: (%d,%d)'%(dzGen.imageLayout[0].w,dzGen.imageLayout[0].h)
     print 'N DeepZoom Levels: %s'%(len(dzGen.tileLayout))
@@ -33,6 +37,8 @@ if __name__=='__main__':
         try: dzGen.del_oldest_tile()
         except IOError: break
     print 'Cache occupies %d kb'%(dzGen.cache_size/1024.0)
+
+    rmtree(str(dzGen.parentDir))
 
     print 'JSON:'
     print dzGen.json
