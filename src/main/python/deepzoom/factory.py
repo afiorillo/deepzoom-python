@@ -1,3 +1,10 @@
+"""
+deepzoom.factory
+
+This module contains factory functions directly related to producing a Deepzoom
+generator.
+"""
+
 from pathlib2 import Path
 
 from deepzoom_objects import DeepzoomInterface as _DeepzoomInterface

@@ -5,7 +5,7 @@ from pathlib2 import Path
 from image_io import FlatDeepzoomImage
 from deepzoom import DeepzoomInterface,StaticCachingDeepzoomInterface
 from image_io.base import LevelInfo
-from deepzoom.factory_functions import Deepzoom
+from deepzoom.factory import Deepzoom
 from image_io.factory import _ImageFactory
 
 FDIR = Path(__file__).parent

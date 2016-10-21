@@ -32,7 +32,6 @@ class TileInfo(object):
 class DeepzoomInterface(object):
 
     tileOverlap = 0 # TODO: bother with overlap?
-    # deepsoom constraints
     defaults = {
         'tileSize': 512,
         'tileFormat': 'jpeg', # 'jpeg' or 'png'

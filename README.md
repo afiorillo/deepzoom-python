@@ -8,6 +8,7 @@ A DeepZoom suite for Python. Contains facilities to access a generic image as a 
 2. `pip install git+git://github.com/andrewmfiorillo/deepzoom-python`
 
 ### TO DOs:
+ [ ] Beautiful documentation
  [ ] Opening images leaves them in place, building a cache doesn't require the whole source image.
  [ ] Image format plugins (Base class, registration, etc.)
  [ ] Config by file

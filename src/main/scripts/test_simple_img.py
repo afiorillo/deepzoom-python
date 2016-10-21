@@ -8,7 +8,7 @@ from shutil import rmtree
 
 from pathlib2 import Path
 
-from deepzoom.factory_functions import Deepzoom
+from deepzoom.factory import Deepzoom
 
 IMG = Path(__file__).parent.parent.parent.joinpath('unittest/python/'
                                                    'img_001_1268_1024.jpg')
